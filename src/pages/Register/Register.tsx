@@ -1,21 +1,21 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router";
 import Input from "../../components/Input/Input";
-import { rules } from "../../utils/rules";
+import { registerSchema, RegisterSchema } from "../../utils/rules";
+import { yupResolver } from "@hookform/resolvers/yup";
 
-interface FormData {
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+type FormData = RegisterSchema;
 
 export default function Register() {
   const {
     register,
-    getValues,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<FormData>({
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+    resolver: yupResolver(registerSchema),
+  });
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
     console.log(data);
@@ -53,7 +53,6 @@ export default function Register() {
                     type="email"
                     errorMassage={errors.email?.message}
                     placeholder="Email"
-                    rules={rules(getValues).email}
                   />
                 </div>
 
@@ -70,7 +69,6 @@ export default function Register() {
                     type="password"
                     errorMassage={errors.password?.message}
                     placeholder="Password"
-                    rules={rules(getValues).password}
                   />
                 </div>
                 <div className="mb-6">
@@ -86,7 +84,6 @@ export default function Register() {
                     type="password"
                     errorMassage={errors.confirmPassword?.message}
                     placeholder="Password"
-                    rules={rules(getValues).confirmPassword}
                   />
                 </div>
                 <div>

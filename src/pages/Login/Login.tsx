@@ -1,22 +1,19 @@
 import { Link } from "react-router";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Input from "../../components/Input/Input";
-import { rules } from "../../utils/rules";
+import { loginSchema, LoginSchema } from "../../utils/rules";
+import { yupResolver } from "@hookform/resolvers/yup";
 
-interface FormData {
-  email: string;
-  password: string;
-}
-
+type FormData = LoginSchema;
 export default function Login() {
   const {
     register,
     handleSubmit,
-    getValues,
     formState: { errors },
   } = useForm<FormData>({
     mode: "onSubmit",
-    reValidateMode: "onSubmit",
+    reValidateMode: "onChange",
+    resolver: yupResolver(loginSchema),
   });
   const onSubmit: SubmitHandler<FormData> = (data) => console.log(data);
   return (
@@ -50,7 +47,6 @@ export default function Login() {
                     type="email"
                     errorMassage={errors.email?.message}
                     placeholder="Email"
-                    rules={rules(getValues).email}
                   />
                 </div>
 
@@ -67,7 +63,6 @@ export default function Login() {
                     type="password"
                     errorMassage={errors.password?.message}
                     placeholder="Password"
-                    rules={rules(getValues).password}
                   />
                 </div>
                 <div>
