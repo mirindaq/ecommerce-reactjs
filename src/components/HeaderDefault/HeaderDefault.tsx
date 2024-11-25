@@ -11,9 +11,9 @@ import { Link } from "react-router";
 export default function HeaderDefault() {
   return (
     <Fragment>
-      <header className="shadow-md py-7 px-4 sm:px-10 bg-yellow-300 font-[sans-serif] min-h-[70px] tracking-wide relative z-50">
-        <div className="flex items-center justify-center  ">
-          <div className="flex flex-nowrap items-center justify-between gap-5 w-3/4">
+      <header>
+        <nav className="bg-yellow-300 border-gray-200 px-4 lg:px-6 py-4 dark:bg-gray-800">
+          <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
             <Link to="/" className="mr-4">
               <img
                 src="https://cdn.haitrieu.com/wp-content/uploads/2021/11/Logo-The-Gioi-Di-Dong-MWG-B-H.png"
@@ -21,24 +21,63 @@ export default function HeaderDefault() {
                 className="w-full sm:w-64 max-w-xs mx-auto"
               />
             </Link>
-            <FormSearch />
-            <div className="flex flex-wrap justify-end space-x-3 max-lg:ml-auto max-lg:flex-col max-lg:items-center max-lg:space-y-3">
-              <ButtonHeader title="Giỏ hàng" icon={CiShoppingCart} />
-              <ButtonHeader title="Địa chỉ" icon={CiLocationOn} />
-              <Link to="/login">
-                <ButtonHeader title="Đăng nhập" icon={CiUser} />
-              </Link>
-              <Link to="/register">
-                <ButtonHeader title="Đăng ký" icon={CiCirclePlus} />
-              </Link>
+            <div className="flex flex-nowrap items-center justify-between w-96">
+              <FormSearch />
             </div>
+            <div className="flex items-center">
+              <button
+                data-collapse-toggle="mobile-menu-2"
+                type="button"
+                className="inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                aria-controls="mobile-menu-2"
+                aria-expanded="false"
+              >
+                <span className="sr-only">Open main menu</span>
+                <svg
+                  className="w-6 h-6"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                    clipRule="evenodd"
+                  ></path>
+                </svg>
+                <svg
+                  className="hidden w-6 h-6"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+            <div
+              className="hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1"
+              id="mobile-menu-2"
+            >
+              <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
+                <ButtonHeader title="Giỏ hàng" icon={CiShoppingCart} />
+                <ButtonHeader title="Địa chỉ" icon={CiLocationOn} />
 
-            <div className="flex max-lg:ml-auto space-x-3"></div>
+                <Link to="/login">
+                  <ButtonHeader title="Đăng nhập" icon={CiUser} />
+                </Link>
+
+                <Link to="/register">
+                  <ButtonHeader title="Đăng ký" icon={CiCirclePlus} />
+                </Link>
+              </ul>
+            </div>
           </div>
-        </div>
-        {/* <div className="flex items-center justify-center  ">
-          <CategoryHeader />
-        </div> */}
+        </nav>
       </header>
     </Fragment>
   );

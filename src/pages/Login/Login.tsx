@@ -1,6 +1,24 @@
 import { Link } from "react-router";
+import { useForm, SubmitHandler } from "react-hook-form";
+import Input from "../../components/Input/Input";
+import { rules } from "../../utils/rules";
+
+interface FormData {
+  email: string;
+  password: string;
+}
 
 export default function Login() {
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm<FormData>({
+    mode: "onSubmit",
+    reValidateMode: "onSubmit",
+  });
+  const onSubmit: SubmitHandler<FormData> = (data) => console.log(data);
   return (
     <>
       <div className="bg-slate-100">
@@ -14,21 +32,25 @@ export default function Login() {
               />
             </div>
 
-            <div className="my-12 mx-20 lg:col-span-3 lg:col-start-4 lg:my-0 lg:mx-0 ">
-              <form className="bg-white shadow-lg rounded-3xl px-8 py-8 sm:px-16 sm:py-12 mb-4 w-full mx-auto">
-                {/* Username input */}
+            <div className="my-12 lg:col-span-3 lg:col-start-4 lg:my-0 lg:mx-0 ">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="bg-white shadow-lg rounded-3xl px-8 py-8 sm:px-16 sm:py-12 mb-4 w-full mx-auto"
+              >
                 <div className="mb-6">
                   <label
-                    htmlFor="username"
+                    htmlFor="email"
                     className="block text-sm  font-semibold text-gray-800 mb-3"
                   >
                     Email
                   </label>
-                  <input
-                    className="shadow-md appearance-none border border-gray-300 rounded-full w-full py-3.5 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
-                    id="username"
-                    type="text"
+                  <Input
+                    name="email"
+                    register={register}
+                    type="email"
+                    errorMassage={errors.email?.message}
                     placeholder="Email"
+                    rules={rules(getValues).email}
                   />
                 </div>
 
@@ -39,17 +61,19 @@ export default function Login() {
                   >
                     Mật khẩu
                   </label>
-                  <input
-                    className="shadow-md appearance-none border border-gray-300 rounded-full w-full py-3.5 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
-                    id="password"
+                  <Input
+                    name="password"
+                    register={register}
                     type="password"
-                    placeholder="Mật khẩu"
+                    errorMassage={errors.password?.message}
+                    placeholder="Password"
+                    rules={rules(getValues).password}
                   />
                 </div>
                 <div>
                   <button
                     className="w-full bg-orange-400 hover:bg-orange-500 text-white font-semibold py-4 px-6 rounded-full transition-all duration-300"
-                    type="button"
+                    type="submit"
                   >
                     Đăng nhập
                   </button>

@@ -1,7 +1,7 @@
 export default function FormSearch() {
   return (
     <>
-      <div className="w-full sm:w-2/5">
+      <div className="w-full">
         <form>
           <label
             htmlFor="search"

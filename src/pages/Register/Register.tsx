@@ -1,6 +1,26 @@
+import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router";
+import Input from "../../components/Input/Input";
+import { rules } from "../../utils/rules";
+
+interface FormData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 export default function Register() {
+  const {
+    register,
+    getValues,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>();
+
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    console.log(data);
+  };
+
   return (
     <>
       <div className="bg-slate-100">
@@ -15,7 +35,10 @@ export default function Register() {
             </div>
 
             <div className="my-12 mx-20 lg:col-span-3 lg:col-start-4 lg:my-0 lg:mx-0 ">
-              <form className="bg-white shadow-lg rounded-3xl px-8 py-8 sm:px-16 sm:py-12 mb-4 w-full mx-auto">
+              <form
+                className="bg-white shadow-lg rounded-3xl px-8 py-8 sm:px-16 sm:py-12 mb-4 w-full mx-auto"
+                onSubmit={handleSubmit(onSubmit)}
+              >
                 {/* Username input */}
                 <div className="mb-6">
                   <label
@@ -24,11 +47,13 @@ export default function Register() {
                   >
                     Email
                   </label>
-                  <input
-                    className="shadow-md appearance-none border border-gray-300 rounded-full w-full py-3.5 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
-                    id="username"
-                    type="text"
+                  <Input
+                    name="email"
+                    register={register}
+                    type="email"
+                    errorMassage={errors.email?.message}
                     placeholder="Email"
+                    rules={rules(getValues).email}
                   />
                 </div>
 
@@ -39,39 +64,41 @@ export default function Register() {
                   >
                     Mật khẩu
                   </label>
-                  <input
-                    className="shadow-md appearance-none border border-gray-300 rounded-full w-full py-3.5 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
-                    id="password"
+                  <Input
+                    name="password"
+                    register={register}
                     type="password"
-                    placeholder="Mật khẩu"
+                    errorMassage={errors.password?.message}
+                    placeholder="Password"
+                    rules={rules(getValues).password}
                   />
                 </div>
                 <div className="mb-6">
                   <label
-                    htmlFor="password"
+                    htmlFor="againPassword"
                     className="block text-sm  font-semibold text-gray-800 mb-3"
                   >
                     Nhập lại mật khẩu
                   </label>
-                  <input
-                    className="shadow-md appearance-none border border-gray-300 rounded-full w-full py-3.5 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
-                    id="password"
+                  <Input
+                    name="confirmPassword"
+                    register={register}
                     type="password"
-                    placeholder="Nhập lại mật khẩu"
+                    errorMassage={errors.confirmPassword?.message}
+                    placeholder="Password"
+                    rules={rules(getValues).confirmPassword}
                   />
                 </div>
                 <div>
                   <button
                     className="w-full bg-orange-400 hover:bg-orange-500 text-white font-semibold py-4 px-6 rounded-full transition-all duration-300"
-                    type="button"
+                    type="submit"
                   >
                     Đăng ký
                   </button>
                 </div>
                 <div className="flex items-center justify-center mt-8">
-                  <div className="text-gray-500 mr-2">
-                    Bạn đã có tài khoản
-                  </div>
+                  <div className="text-gray-500 mr-2">Bạn đã có tài khoản</div>
                   <Link to="/login" className="text-orange-500">
                     Đăng nhập
                   </Link>
