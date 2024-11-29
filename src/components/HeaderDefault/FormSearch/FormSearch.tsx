@@ -1,8 +1,8 @@
 export default function FormSearch() {
   return (
     <>
-      <div className="w-full">
-        <form>
+      <div className="w-full ">
+        <form className="m-0">
           <label
             htmlFor="search"
             className="text-sm font-medium text-gray-900 sr-only dark:text-white"

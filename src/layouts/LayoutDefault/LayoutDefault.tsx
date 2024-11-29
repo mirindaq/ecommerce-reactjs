@@ -10,6 +10,7 @@ export default function LayoutDefault({ children }: Props) {
     <>
       <HeaderDefault />
       {children}
+
       <FooterDefault />
     </>
   );

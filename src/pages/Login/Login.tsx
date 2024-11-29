@@ -3,19 +3,41 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import Input from "../../components/Input/Input";
 import { loginSchema, LoginSchema } from "../../utils/rules";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useMutation } from "@tanstack/react-query";
+import { loginAccount } from "../../apis/auth.api";
+import { toast } from "react-toastify";
 
 type FormData = LoginSchema;
 export default function Login() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormData>({
     mode: "onSubmit",
     reValidateMode: "onChange",
     resolver: yupResolver(loginSchema),
   });
-  const onSubmit: SubmitHandler<FormData> = (data) => console.log(data);
+
+  const loginAccountMutation = useMutation({
+    mutationFn: (body: { email: string; password: string }) => {
+      return loginAccount(body);
+    },
+  });
+
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    loginAccountMutation.mutate(data, {
+      onSuccess: (data) => {
+        reset();
+        toast.success("Đăng nhập thành công");
+        console.log(data);
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
+  };
   return (
     <>
       <div className="bg-slate-100">

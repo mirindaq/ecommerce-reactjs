@@ -3,6 +3,10 @@ import { Link } from "react-router";
 import Input from "../../components/Input/Input";
 import { registerSchema, RegisterSchema } from "../../utils/rules";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useMutation } from "@tanstack/react-query";
+import { registerAccount } from "../../apis/auth.api";
+import { isAxiosConflictError } from "../../utils/utils";
+import { ResponseApi } from "../../types/utils.type";
 
 type FormData = RegisterSchema;
 
@@ -10,6 +14,8 @@ export default function Register() {
   const {
     register,
     handleSubmit,
+    setError,
+    reset,
     formState: { errors },
   } = useForm<FormData>({
     mode: "onSubmit",
@@ -17,8 +23,33 @@ export default function Register() {
     resolver: yupResolver(registerSchema),
   });
 
+  const registerAccountMutation = useMutation({
+    mutationFn: (body: Omit<FormData, "confirmPassword">) =>
+      registerAccount(body),
+  });
+
   const onSubmit: SubmitHandler<FormData> = (data) => {
-    console.log(data);
+    registerAccountMutation.mutate(data, {
+      onSuccess: () => {
+        alert("Đăng ký thành công");
+        reset();
+      },
+      onError: (error) => {
+        if (
+          isAxiosConflictError<ResponseApi<Omit<FormData, "confirmPassword">>>(
+            error
+          )
+        ) {
+          const formError = error.response?.data.data;
+          if (formError?.email) {
+            setError("email", {
+              message: formError.email,
+              type: "Server",
+            });
+          }
+        }
+      },
+    });
   };
 
   return (
