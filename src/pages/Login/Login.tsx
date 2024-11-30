@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Input from "../../components/Input/Input";
 import { loginSchema, LoginSchema } from "../../utils/rules";
@@ -6,9 +6,16 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
 import { loginAccount } from "../../apis/auth.api";
 import { toast } from "react-toastify";
+import { useContext } from "react";
+import { AppContext } from "../../contexts/app.context";
+import Button from "../../components/Button/Button";
+import { path } from "../../constants/path";
 
 type FormData = LoginSchema;
 export default function Login() {
+  const { setIsAuthenticated } = useContext(AppContext);
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -28,13 +35,14 @@ export default function Login() {
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
     loginAccountMutation.mutate(data, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         reset();
+        setIsAuthenticated(true);
         toast.success("Đăng nhập thành công");
-        console.log(data);
+        navigate(path.home);
       },
-      onError: (error) => {
-        console.error(error);
+      onError: () => {
+        toast.error("Email hoặc mật khẩu không chính xác");
       },
     });
   };
@@ -88,12 +96,14 @@ export default function Login() {
                   />
                 </div>
                 <div>
-                  <button
-                    className="w-full bg-orange-400 hover:bg-orange-500 text-white font-semibold py-4 px-6 rounded-full transition-all duration-300"
+                  <Button
+                    className="w-full bg-orange-400 hover:bg-orange-500 text-white font-semibold py-4 px-6 rounded-full transition-all duration-300 flex justify-center items-center"
                     type="submit"
+                    disabled={loginAccountMutation.isPending}
+                    isLoading={loginAccountMutation.isPending}
                   >
                     Đăng nhập
-                  </button>
+                  </Button>
                 </div>
                 <div className="mt-4 text-center">
                   <a
@@ -108,7 +118,7 @@ export default function Login() {
                   <div className="text-gray-500 mr-2">
                     Bạn chưa có tài khoản
                   </div>
-                  <Link to="/register" className="text-orange-500">
+                  <Link to={path.register} className="text-orange-500">
                     Đăng ký
                   </Link>
                 </div>

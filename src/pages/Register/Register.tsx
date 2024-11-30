@@ -1,5 +1,5 @@
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import Input from "../../components/Input/Input";
 import { registerSchema, RegisterSchema } from "../../utils/rules";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -7,10 +7,14 @@ import { useMutation } from "@tanstack/react-query";
 import { registerAccount } from "../../apis/auth.api";
 import { isAxiosConflictError } from "../../utils/utils";
 import { ResponseApi } from "../../types/utils.type";
+import Button from "../../components/Button/Button";
+import { path } from "../../constants/path";
 
 type FormData = RegisterSchema;
 
 export default function Register() {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -32,6 +36,7 @@ export default function Register() {
     registerAccountMutation.mutate(data, {
       onSuccess: () => {
         alert("Đăng ký thành công");
+        navigate(path.login);
         reset();
       },
       onError: (error) => {
@@ -118,16 +123,18 @@ export default function Register() {
                   />
                 </div>
                 <div>
-                  <button
-                    className="w-full bg-orange-400 hover:bg-orange-500 text-white font-semibold py-4 px-6 rounded-full transition-all duration-300"
+                  <Button
+                    className="w-full bg-orange-400 hover:bg-orange-500 text-white font-semibold py-4 px-6 rounded-full transition-all duration-300 flex justify-center items-center"
                     type="submit"
+                    disabled={registerAccountMutation.isPending}
+                    isLoading={registerAccountMutation.isPending}
                   >
                     Đăng ký
-                  </button>
+                  </Button>
                 </div>
                 <div className="flex items-center justify-center mt-8">
                   <div className="text-gray-500 mr-2">Bạn đã có tài khoản</div>
-                  <Link to="/login" className="text-orange-500">
+                  <Link to={path.login} className="text-orange-500">
                     Đăng nhập
                   </Link>
                 </div>

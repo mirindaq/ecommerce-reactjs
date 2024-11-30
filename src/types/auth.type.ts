@@ -2,7 +2,7 @@ import { User } from "./user.type";
 import { ResponseApi } from "./utils.type";
 
 export type AuthLogin = ResponseApi<{
-  access_token: string;
+  accessToken: string;
   user: User;
   role: string[];
 }>;
