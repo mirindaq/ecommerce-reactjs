@@ -1,19 +1,23 @@
-import { getAccessTokenFromLocalStorage } from "../utils/auth";
+import {
+  getAccessTokenFromLocalStorage,
+  getUserFromLocalStorage,
+} from "../utils/auth";
 import { createContext, useState } from "react";
 import React from "react";
+import { User } from "../types/user.type";
 
 interface AppContextInterface {
   isAuthenticated: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
-const getInitialAuthState = () => {
-  return Boolean(getAccessTokenFromLocalStorage());
-};
-
 const initialAppContext: AppContextInterface = {
-  isAuthenticated: getInitialAuthState(),
+  isAuthenticated: Boolean(getAccessTokenFromLocalStorage()),
   setIsAuthenticated: () => null,
+  user: getUserFromLocalStorage(),
+  setUser: () => null,
 };
 
 export const AppContext = createContext<AppContextInterface>(initialAppContext);
@@ -23,8 +27,17 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     initialAppContext.isAuthenticated
   );
 
+  const [user, setUser] = useState<User | null>(initialAppContext.user);
+
   return (
-    <AppContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+    <AppContext.Provider
+      value={{
+        isAuthenticated,
+        setIsAuthenticated,
+        user,
+        setUser,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );

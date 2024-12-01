@@ -7,20 +7,35 @@ interface InputProps {
   name: string;
   register: UseFormRegister<any>;
   rules?: RegisterOptions;
+  defaultValue?: string;
+  className: string;
+  disabled: boolean;
 }
 
 export default function Input(props: InputProps) {
-  const { type, errorMassage, placeholder, name, register, rules } = props;
+  const {
+    type,
+    errorMassage,
+    placeholder,
+    name,
+    register,
+    rules,
+    defaultValue,
+    className,
+    disabled,
+  } = props;
+
   return (
     <>
       <input
-        className="shadow-md appearance-none border border-gray-300 rounded-full w-full py-3.5 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
+        className={className}
         id={name}
         type={type}
         placeholder={placeholder}
-        {...register(name, rules)}
+        {...register(name, { ...rules, value: defaultValue })}
+        disabled={disabled}
       />
-      <p className="text-red-500 mt-3">{errorMassage}</p>
+      {errorMassage && <p className="text-red-500 mt-3">{errorMassage}</p>}
     </>
   );
 }

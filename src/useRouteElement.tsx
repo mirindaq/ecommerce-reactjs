@@ -7,6 +7,8 @@ import Profile from "./pages/Profile/Profile";
 import { useContext } from "react";
 import { AppContext } from "./contexts/app.context";
 import { path } from "./constants/path";
+import Information from "./pages/Profile/Information/Information";
+import OrderUser from "./pages/Profile/OrderUser/OrderUser";
 
 export default function useRouteElement() {
   function ProtectedRoute() {
@@ -41,6 +43,16 @@ export default function useRouteElement() {
               <Profile />
             </LayoutDefault>
           ),
+          children: [
+            {
+              path: path.information,
+              element: <Information />,
+            },
+            {
+              path: "",
+              element: <OrderUser />,
+            },
+          ],
         },
       ],
     },

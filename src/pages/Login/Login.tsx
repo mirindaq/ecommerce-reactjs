@@ -13,7 +13,7 @@ import { path } from "../../constants/path";
 
 type FormData = LoginSchema;
 export default function Login() {
-  const { setIsAuthenticated } = useContext(AppContext);
+  const { setIsAuthenticated, setUser } = useContext(AppContext);
   const navigate = useNavigate();
 
   const {
@@ -35,9 +35,11 @@ export default function Login() {
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
     loginAccountMutation.mutate(data, {
-      onSuccess: () => {
+      onSuccess: (data) => {
         reset();
         setIsAuthenticated(true);
+        console.log(data.data.data.user);
+        setUser(data.data.data.user);
         toast.success("Đăng nhập thành công");
         navigate(path.home);
       },
@@ -77,6 +79,9 @@ export default function Login() {
                     type="email"
                     errorMassage={errors.email?.message}
                     placeholder="Email"
+                    defaultValue=""
+                    disabled={false}
+                    className="shadow-md appearance-none border border-gray-300 rounded-full w-full py-3.5 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
                   />
                 </div>
 
@@ -93,6 +98,9 @@ export default function Login() {
                     type="password"
                     errorMassage={errors.password?.message}
                     placeholder="Password"
+                    disabled={false}
+                    defaultValue=""
+                    className="shadow-md appearance-none border border-gray-300 rounded-full w-full py-3.5 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
                   />
                 </div>
                 <div>

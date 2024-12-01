@@ -5,6 +5,7 @@ import {
   getAccessTokenFromLocalStorage,
   removeAccessTokenFromLocalStorage,
   setAccessTokenToLocalStorage,
+  setUserToLocalStorage,
 } from "./auth";
 import { path } from "../constants/path";
 
@@ -35,8 +36,10 @@ class Http {
       (response) => {
         const { url } = response.config;
         if (url === path.login) {
-          this.accessToken = (response.data as AuthLogin).data.accessToken;
+          const responseData = response.data as AuthLogin;
+          this.accessToken = responseData.data.accessToken;
           setAccessTokenToLocalStorage(this.accessToken);
+          setUserToLocalStorage(responseData.data.user);
         } else if (url === path.logout) {
           this.accessToken = "";
           removeAccessTokenFromLocalStorage();
