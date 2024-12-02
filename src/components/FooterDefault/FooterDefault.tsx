@@ -1,7 +1,7 @@
 export default function FooterDefault() {
   return (
-    <footer className="p-4 bg-white sm:p-8">
-      <div className="mx-auto max-w-screen-2xl pt-8 mt-4 dark:bg-gray-800 border-t border-gray-200">
+    <footer className="bg-white pb-4 px-4 mt-6">
+      <div className="mx-auto max-w-screen-2xl pt-8 dark:bg-gray-800 border-t border-gray-200">
         <div className="md:flex md:justify-between">
           <div className="flex flex-nowrap justify-between gap-8 sm:gap-6 w-full">
             <div className="w-full sm:w-auto md:w-1/3">

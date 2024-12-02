@@ -8,10 +8,16 @@ export default {
     "./node_modules/flowbite/**/*.js"
   ],
   corePlugins: {
-    container : false
+    container: false
   },
   theme: {
     extend: {},
+    colors: {
+      'color-background': {
+        100: "#F2F4F7",
+        200: "#E4E7ED"
+      }
+    }
   },
   plugins: [
     require('flowbite/plugin')

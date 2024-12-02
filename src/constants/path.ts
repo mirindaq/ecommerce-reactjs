@@ -6,4 +6,5 @@ export const path = {
   register: "/register",
   logout: "/logout",
   cart: "/cart",
+  productDetail: "/product/:id",
 };

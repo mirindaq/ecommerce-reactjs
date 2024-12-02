@@ -10,15 +10,18 @@ export default function ProductBox(props: ProductBoxProps) {
   const attribute = product.attributeList;
   return (
     <Link
-      to="/"
-      className="col-span-2 p-4 border border-gray-200 rounded-md flex flex-col h-full"
+      to={`/product/${product.id}`}
+      className="col-span-2 px-4 py-3 border border-gray-200 rounded-sm flex flex-col h-full"
     >
       <div className="flex-grow">
-        <img
-          alt={product.name}
-          src={product.image}
-          className="aspect-square w-full rounded-md bg-gray-200 object-cover lg:aspect-auto lg:h-60"
-        />
+        <div className="flex justify-center py-3">
+          <img
+            alt={product.name}
+            src={product.image}
+            className="aspect-square w-5/6 rounded-md bg-white object-scale-down  transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110 duration-200"
+          />
+        </div>
+
         <div className="mt-4">
           <h3 className="text-sm text-gray-700">
             <span className="text-black hover:text-blue-500 text-lg">

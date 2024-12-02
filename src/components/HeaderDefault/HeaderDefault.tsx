@@ -11,7 +11,7 @@ export default function HeaderDefault() {
   return (
     <Fragment>
       <header>
-        <nav className="bg-yellow-300 border-gray-200 px-4 lg:px-6 py-6 dark:bg-gray-800">
+        <nav className="bg-yellow-300 border-gray-200 px-4 lg:px-6 py-5 dark:bg-gray-800">
           <div className="grid grid-cols-12">
             <div className="col-start-2 col-span-3 mr-4">
               <Link to="/">

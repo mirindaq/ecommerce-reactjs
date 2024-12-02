@@ -30,7 +30,7 @@ export default function Profile() {
     <div className="flex justify-center">
       <div className="w-3/5">
         <div className="grid grid-cols-12 gap-5 mt-8 mb-7">
-          <div className="bg-white col-span-4">
+          <div className="col-span-4 bg-color-background-100">
             <p className="text-lg mb-4">
               Xin chào, <span className="font-bold text-lg">Anh Hoàng</span>
             </p>
@@ -38,8 +38,8 @@ export default function Profile() {
               to={path.profile}
               end
               className={({ isActive, isPending }) =>
-                `flex items-center rounded-md bg-white p-4 text-center text-sm text-black transition-all shadow-sm hover:shadow-lg   hover:bg-slate-300 w-11/12 mt-1 ${
-                  isActive ? "bg-slate-300 slate" : ""
+                `flex items-center rounded-md p-4 text-center text-sm text-black transition-all  hover:bg-color-background-200 w-11/12 mt-1 ${
+                  isActive ? "bg-color-background-200" : ""
                 } ${isPending ? "pending" : ""}`
               }
               type="button"
@@ -50,8 +50,8 @@ export default function Profile() {
             <NavLink
               to={path.information}
               className={({ isActive, isPending }) =>
-                `flex items-center rounded-md bg-white p-4 text-center text-sm text-black transition-all shadow-sm hover:shadow-lg   hover:bg-slate-300 w-11/12 mt-1 ${
-                  isActive ? "bg-slate-300 slate" : ""
+                `flex items-center rounded-md p-4 text-center text-sm text-black transition-all  hover:bg-color-background-200 w-11/12 mt-1 ${
+                  isActive ? "bg-color-background-200" : ""
                 } ${isPending ? "pending" : ""}`
               }
               type="button"
@@ -70,7 +70,7 @@ export default function Profile() {
               Đăng xuất
             </Button>
           </div>
-          <div className="bg-white col-span-8">
+          <div className="col-span-8">
             <Outlet />
           </div>
         </div>

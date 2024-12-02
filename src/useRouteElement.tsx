@@ -9,6 +9,7 @@ import { AppContext } from "./contexts/app.context";
 import { path } from "./constants/path";
 import Information from "./pages/Profile/Information/Information";
 import OrderUser from "./pages/Profile/OrderUser/OrderUser";
+import ProductDetail from "./pages/ProductDetail/ProductDetail";
 
 export default function useRouteElement() {
   function ProtectedRoute() {
@@ -28,6 +29,15 @@ export default function useRouteElement() {
       element: (
         <LayoutDefault>
           <Home />
+        </LayoutDefault>
+      ),
+    },
+    {
+      path: path.productDetail,
+      index: true,
+      element: (
+        <LayoutDefault>
+          <ProductDetail />
         </LayoutDefault>
       ),
     },
