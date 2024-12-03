@@ -7,4 +7,5 @@ export const path = {
   logout: "/logout",
   cart: "/cart",
   productDetail: "/product/:id",
+  productClient: "/product",
 };

@@ -10,6 +10,7 @@ import { path } from "./constants/path";
 import Information from "./pages/Profile/Information/Information";
 import OrderUser from "./pages/Profile/OrderUser/OrderUser";
 import ProductDetail from "./pages/ProductDetail/ProductDetail";
+import ProductListSearch from "./pages/ProductListSearch/ProductListSearch";
 
 export default function useRouteElement() {
   function ProtectedRoute() {
@@ -38,6 +39,15 @@ export default function useRouteElement() {
       element: (
         <LayoutDefault>
           <ProductDetail />
+        </LayoutDefault>
+      ),
+    },
+    {
+      path: path.productClient,
+      index: true,
+      element: (
+        <LayoutDefault>
+          <ProductListSearch />
         </LayoutDefault>
       ),
     },

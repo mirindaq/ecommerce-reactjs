@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Product } from "../../../../../types/product.type";
+import { Product } from "../../types/product.type";
 
 interface ProductBoxProps {
   product: Product;
@@ -11,13 +11,13 @@ export default function ProductBox(props: ProductBoxProps) {
   return (
     <Link
       to={`/product/${product.id}`}
-      className="col-span-2 px-4 py-3 border border-gray-200 rounded-sm flex flex-col h-full"
+      className="col-span-2 px-4 py-3 border border-gray-200 rounded-lg flex flex-col h-full"
     >
       <div className="flex-grow">
         <div className="flex justify-center py-3">
           <img
             alt={product.name}
-            src={product.image}
+            src={product.images[0]}
             className="aspect-square w-5/6 rounded-md bg-white object-scale-down  transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110 duration-200"
           />
         </div>
