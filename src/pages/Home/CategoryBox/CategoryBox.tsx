@@ -49,7 +49,7 @@ export default function CategoryBox() {
         )}
         {categoryList &&
           categoryList.map((item) => (
-            <Link
+            <Link key={item.id}
               to={path.productClient + `/?categoryName=${item.name}`}
               className="col-span-3 text-center border py-4 rounded-tl-lg hover:border-orange-300 hover:shadow-md "
             >

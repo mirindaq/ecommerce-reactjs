@@ -1,41 +1,59 @@
 import { useEffect, useState } from "react";
 import { Product, ProductSearchParams } from "../../types/product.type";
 import { useMutation } from "@tanstack/react-query";
-import { useQueries } from "../../utils/useQueries";
 import ProductList from "../../components/ProductList/ProductList";
 import { searchProducts } from "../../apis/product.api";
 import BrandBox from "./components/BrandBox/BrandBox";
+import { Brand } from "../../types/brand.type";
+import { getBrandByCategory } from "../../apis/brand.api";
+import { useSearchParams } from "react-router";
+
+export type QueryConfig = {
+  [key in keyof ProductSearchParams]: string
+}
 
 export default function ProductListSearch() {
   const [productList, setProductList] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true); // Set to true initially
-  const params = useQueries();
+  const [brandList, setBrandList] = useState<Brand[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [count, setCount] = useState<number>(0);
+  const [searchParams] = useSearchParams();
 
-  const queryParams: ProductSearchParams = {
-    name: params.name || undefined,
-    minPrice: params.minPrice ? Number(params.minPrice) : undefined,
-    maxPrice: params.maxPrice ? Number(params.maxPrice) : undefined,
-    discount: params.discount ? Number(params.discount) : undefined,
-    brandName: params.brandName || undefined,
-    categoryName: params.categoryName || undefined,
-  };
+  const queryParams: QueryConfig = Object.fromEntries(
+    Array.from(searchParams.entries()).map(([key, value]) => [key, value])
+  );
+
+  queryParams.page = queryParams.page || "1";
+  queryParams.categoryName = queryParams.categoryName || "default-category";
 
   const searchProduct = useMutation({
-    mutationFn: () => searchProducts(queryParams),
-    onSuccess: (data) => {
+    mutationFn: async () => {
+      const [productResponse, brandResponse] = await Promise.all([
+        searchProducts(queryParams as ProductSearchParams),
+        getBrandByCategory(queryParams.categoryName || "default-category")
+      ]);
+      return { productResponse, brandResponse };
+    },
+    onSuccess: ({ productResponse, brandResponse }) => {
+      setProductList(productResponse.data.data.products);
+      setCount(
+        productResponse.data.data.total -
+        productResponse.data.data.limit * productResponse.data.data.page
+      );
+      setBrandList(brandResponse.data.data.brands);
       setIsLoading(false);
-      setProductList(data.data.data.products);
     },
     onError: (error) => {
-      console.error("Error fetching products:", error);
-    },
+      console.error("Error fetching data:", error);
+      setIsLoading(false);
+    }
   });
 
   useEffect(() => {
+    setIsLoading(true);
     searchProduct.mutate();
-  }, []);
+  }, [searchParams]);
 
-  console.log(productList);
 
   return (
     <>
@@ -64,10 +82,12 @@ export default function ProductListSearch() {
               <div className="py-2 px-3 col-span-1 rounded-lg bg-color-background-200 text-center border border-transparent hover:border-blue-600 hover:cursor-pointer">
                 Lọc
               </div>
-              <BrandBox />
-              <BrandBox />
-              <BrandBox />
-              <BrandBox />
+              {brandList && (
+                brandList.map(item => (
+                  <BrandBox params={queryParams} imageUrl={item.imageUrl} name={item.name} key={item.name} />
+                ))
+              )}
+
             </div>
             <div className="mx-4 pt-2 pb-2 mb-4 border-b gap-5 flex items-center">
               <p className="text-sm">Sắp xếp theo: </p>
@@ -82,7 +102,7 @@ export default function ProductListSearch() {
                   id="countries"
                   className="border-0 text-gray-900 text-sm rounded-lg cursor-pointer"
                 >
-                  <option selected className="hidden">
+                  <option defaultChecked className="hidden">
                     Giá
                   </option>
                   <option value="US">Thấp đến cao</option>
@@ -91,6 +111,9 @@ export default function ProductListSearch() {
               </div>
             </div>
             <ProductList isLoading={isLoading} productList={productList} />
+            <div className="w-3/5">
+              Xem thêm {count}
+            </div>
           </div>
         </div>
       </div>

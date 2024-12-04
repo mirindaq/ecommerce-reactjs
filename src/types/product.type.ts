@@ -31,10 +31,15 @@ export interface ProductSearchParams {
   categoryName?: string;
   page?: number | string;
   limit?: number | string;
-  sort_by?: "createdAt" | "view" | "sold" | "price";
-  order?: "asc" | "desc";
+  sortBy?: "createdDate" | "rating" | "price";
+  sortOrder?: "asc" | "desc";
 }
 
-export type SuccessProductList = ResponseApi<{ products: Product[] }>;
+export type SuccessProductList = ResponseApi<{
+  products: Product[];
+  total: number;
+  page: number;
+  limit: number;
+}>;
 
 export type SuccessProduct = ResponseApi<{ product: Product }>;
