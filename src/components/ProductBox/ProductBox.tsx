@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { Product } from "../../types/product.type";
+import { path } from "../../constants/path";
 
 interface ProductBoxProps {
   product: Product;
@@ -10,16 +11,21 @@ export default function ProductBox(props: ProductBoxProps) {
   const attribute = product.attributeList;
   return (
     <Link
-      to={`/product/${product.id}`}
+      to={`/products/${product.id}`}
       className="col-span-2 px-4 py-3 border border-gray-200 rounded-lg flex flex-col h-full"
     >
       <div className="flex-grow">
-        <div className="flex justify-center py-3">
+        <div className="flex justify-center py-3 relative  ">
           <img
             alt={product.name}
             src={product.images[0]}
-            className="aspect-square w-5/6 rounded-md bg-white object-scale-down  transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110 duration-200"
+            className="aspect-square w-5/6 rounded-md bg-white object-scale-down transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110 duration-200"
           />
+
+          <div className="absolute top-1 right-0.5 bg-orange-400 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+            -{product.discount}%
+          </div>
+
         </div>
 
         <div className="mt-4">

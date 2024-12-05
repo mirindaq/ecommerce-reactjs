@@ -6,9 +6,12 @@ import { searchProducts } from "../../apis/product.api";
 import BrandBox from "./components/BrandBox/BrandBox";
 import { Brand } from "../../types/brand.type";
 import { getBrandByCategory } from "../../apis/brand.api";
-import { useSearchParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
+import SortBox from "./components/SortBox/SortBox";
+import { FaArrowDown } from "react-icons/fa";
 
 export type QueryConfig = {
+  // eslint-disable-next-line no-unused-vars
   [key in keyof ProductSearchParams]: string
 }
 
@@ -25,22 +28,30 @@ export default function ProductListSearch() {
 
   queryParams.page = queryParams.page || "1";
   queryParams.categoryName = queryParams.categoryName || "default-category";
+  queryParams.limit = queryParams.limit || "6";
 
-  const searchProduct = useMutation({
-    mutationFn: async () => {
-      const [productResponse, brandResponse] = await Promise.all([
-        searchProducts(queryParams as ProductSearchParams),
-        getBrandByCategory(queryParams.categoryName || "default-category")
-      ]);
-      return { productResponse, brandResponse };
+  const searchBrand = useMutation({
+    mutationFn: () => getBrandByCategory(queryParams.categoryName || ""),
+    onSuccess: (response) => {
+      setBrandList(response.data.data.brands);
     },
-    onSuccess: ({ productResponse, brandResponse }) => {
+    onError: (error) => {
+      console.error("Error fetching data:", error);
+    }
+  });
+  const searchProduct = useMutation({
+    mutationFn: () => searchProducts(queryParams as ProductSearchParams),
+
+
+    onSuccess: (productResponse) => {
       setProductList(productResponse.data.data.products);
       setCount(
-        productResponse.data.data.total -
-        productResponse.data.data.limit * productResponse.data.data.page
+        Math.max(
+          productResponse.data.data.total -
+          productResponse.data.data.limit * productResponse.data.data.page,
+          0
+        )
       );
-      setBrandList(brandResponse.data.data.brands);
       setIsLoading(false);
     },
     onError: (error) => {
@@ -51,9 +62,18 @@ export default function ProductListSearch() {
 
   useEffect(() => {
     setIsLoading(true);
+    searchBrand.mutate();
     searchProduct.mutate();
   }, [searchParams]);
 
+  const handleLoadMore = () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.set(
+      "limit",
+      String((Number(searchParams.get("page") || 1) + 1) * Number(searchParams.get("limit") || 6))
+    );
+    return `${window.location.pathname}?${searchParams.toString()}`;
+  };
 
   return (
     <>
@@ -82,37 +102,29 @@ export default function ProductListSearch() {
               <div className="py-2 px-3 col-span-1 rounded-lg bg-color-background-200 text-center border border-transparent hover:border-blue-600 hover:cursor-pointer">
                 Lọc
               </div>
+              <BrandBox isBrand={false} params={queryParams} name="Tất cả" />
               {brandList && (
                 brandList.map(item => (
-                  <BrandBox params={queryParams} imageUrl={item.imageUrl} name={item.name} key={item.name} />
+                  <BrandBox isBrand={true} params={queryParams} imageUrl={item.imageUrl} name={item.name} key={item.name} />
                 ))
               )}
 
             </div>
             <div className="mx-4 pt-2 pb-2 mb-4 border-b gap-5 flex items-center">
               <p className="text-sm">Sắp xếp theo: </p>
-              <p className="text-sm hover:text-blue-500 cursor-pointer">
-                Mới nhất
-              </p>
-              <p className="text-sm hover:text-blue-500 cursor-pointer">
-                Đánh giá
-              </p>
-              <div>
-                <select
-                  id="countries"
-                  className="border-0 text-gray-900 text-sm rounded-lg cursor-pointer"
-                >
-                  <option defaultChecked className="hidden">
-                    Giá
-                  </option>
-                  <option value="US">Thấp đến cao</option>
-                  <option value="CA">Cao xuống thấp</option>
-                </select>
-              </div>
+              <SortBox title="Giảm giá" params={queryParams} sortBy="discount" />
+              <SortBox title="Mới nhất" params={queryParams} sortBy="createdDate" />
+              <SortBox title="Giá Cao - Thấp" params={queryParams} sortBy="price" sortOrder="desc" />
+              <SortBox title="Giá Thấp - Cao" params={queryParams} sortBy="price" sortOrder="asc" />
+
             </div>
             <ProductList isLoading={isLoading} productList={productList} />
-            <div className="w-3/5">
-              Xem thêm {count}
+            <div className="flex align-items-center justify-center">
+              {count != 0 && (<Link to={handleLoadMore()} className="px-24 py-3 rounded-lg text-blue-500 
+              font-bold text-sm bg-white border border-blue-400 flex items-center hover:cursor-pointer">
+                <span className="pr-1">Xem thêm {count} </span>
+                <FaArrowDown /></Link>)}
+
             </div>
           </div>
         </div>
