@@ -6,7 +6,7 @@ import { searchProducts } from "../../apis/product.api";
 import BrandBox from "./components/BrandBox/BrandBox";
 import { Brand } from "../../types/brand.type";
 import { getBrandByCategory } from "../../apis/brand.api";
-import { Link, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import SortBox from "./components/SortBox/SortBox";
 import { FaArrowDown } from "react-icons/fa";
 
@@ -16,19 +16,24 @@ export type QueryConfig = {
 }
 
 export default function ProductListSearch() {
+  const initialLimit = "6"
+
   const [productList, setProductList] = useState<Product[]>([]);
   const [brandList, setBrandList] = useState<Brand[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [count, setCount] = useState<number>(0);
   const [searchParams] = useSearchParams();
-
   const queryParams: QueryConfig = Object.fromEntries(
     Array.from(searchParams.entries()).map(([key, value]) => [key, value])
   );
 
   queryParams.page = queryParams.page || "1";
   queryParams.categoryName = queryParams.categoryName || "default-category";
-  queryParams.limit = queryParams.limit || "6";
+  queryParams.limit = queryParams.limit || initialLimit;
+
+  const [page, setPage] = useState(Number(queryParams.page) || 1);
+  const [totalPage, setTotalPage] = useState<number>(0)
+
 
   const searchBrand = useMutation({
     mutationFn: () => getBrandByCategory(queryParams.categoryName || ""),
@@ -39,12 +44,32 @@ export default function ProductListSearch() {
       console.error("Error fetching data:", error);
     }
   });
+
   const searchProduct = useMutation({
     mutationFn: () => searchProducts(queryParams as ProductSearchParams),
-
-
     onSuccess: (productResponse) => {
       setProductList(productResponse.data.data.products);
+      setCount(
+        Math.max(
+          productResponse.data.data.total -
+          productResponse.data.data.limit * productResponse.data.data.page,
+          0
+        )
+      );
+      setPage(productResponse.data.data.page)
+      setTotalPage(productResponse.data.data.total / Number(initialLimit));
+      setIsLoading(false);
+    },
+    onError: (error) => {
+      console.error("Error fetching data:", error);
+      setIsLoading(false);
+    }
+  });
+
+  const searchProductMore = useMutation({
+    mutationFn: (query: ProductSearchParams) => searchProducts(query),
+    onSuccess: (productResponse) => {
+      setProductList([...productList, ...productResponse.data.data.products]);
       setCount(
         Math.max(
           productResponse.data.data.total -
@@ -67,14 +92,12 @@ export default function ProductListSearch() {
   }, [searchParams]);
 
   const handleLoadMore = () => {
-    const searchParams = new URLSearchParams(window.location.search);
-    searchParams.set(
-      "limit",
-      String((Number(searchParams.get("page") || 1) + 1) * Number(searchParams.get("limit") || 6))
-    );
-    return `${window.location.pathname}?${searchParams.toString()}`;
+    const newPage = page + 1;
+    setPage(newPage);
+    setIsLoading(true);
+    const newQueryParams = { ...queryParams, page: String(newPage) };
+    searchProductMore.mutate(newQueryParams as ProductSearchParams);
   };
-
   return (
     <>
       <div className="flex justify-center mt-5">
@@ -120,10 +143,10 @@ export default function ProductListSearch() {
             </div>
             <ProductList isLoading={isLoading} productList={productList} />
             <div className="flex align-items-center justify-center">
-              {count != 0 && (<Link to={handleLoadMore()} className="px-24 py-3 rounded-lg text-blue-500 
+              {page < totalPage && (<button onClick={handleLoadMore} className="px-24 py-3 rounded-lg text-blue-500 
               font-bold text-sm bg-white border border-blue-400 flex items-center hover:cursor-pointer">
                 <span className="pr-1">Xem thêm {count} </span>
-                <FaArrowDown /></Link>)}
+                <FaArrowDown /></button>)}
 
             </div>
           </div>

@@ -24,8 +24,6 @@ export default function SortBox(props: SortBoxProps) {
 
   const queryString = new URLSearchParams(updatedParams).toString();
   const linkTo = `/products?${queryString}`;
-  console.log(linkTo);
-
   return (
     <>
 

@@ -16,8 +16,8 @@ export default function ProductList(props: ProductListProps) {
         <div className="mx-auto pt-1 pb-10 rounded-lg px-4 lg:max-w-10xl">
           <h2 className="sr-only">Products</h2>
 
-          <div className="grid grid-cols-12 gap-4 ">
-            {isLoading ? (
+          <div className="grid grid-cols-12 gap-4">
+            {isLoading && productList.length === 0 ? (
               <>
                 <Skeleton />
                 <Skeleton />
