@@ -1,5 +1,6 @@
 import {
   ProductSearchParams,
+  ProductSearchParamsAdmin,
   SuccessProduct,
   SuccessProductList,
 } from "../types/product.type";
@@ -14,5 +15,8 @@ export const getProductById = (id: number) => {
 };
 
 export const searchProducts = (params: ProductSearchParams) => {
+  return http.get<SuccessProductList>("/products", { params });
+};
+export const searchProductsAdmin = (params: ProductSearchParamsAdmin) => {
   return http.get<SuccessProductList>("/products", { params });
 };

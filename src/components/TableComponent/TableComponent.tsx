@@ -1,8 +1,71 @@
-import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { searchProductsAdmin } from '../../apis/product.api';
+import { Product, ProductSearchParamsAdmin } from '../../types/product.type';
+import { toast } from 'react-toastify';
+import { useSearchParams } from 'react-router';
+import Pagination from '../Pagination/Pagination';
 
-const TableComponent = () => {
+export type QueryConfig = {
+  // eslint-disable-next-line no-unused-vars
+  [key in keyof ProductSearchParamsAdmin]: string
+}
+
+export default function TableComponent() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('Last 7 days');
+  const [productList, setProductList] = useState<Product[]>([])
+  const [page, setPage] = useState<string>("1");
+  const [limit, setLimit] = useState<string>("4");
+  const [total, setTotal] = useState<number>(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const queryParams: QueryConfig = Object.fromEntries(
+    Array.from(searchParams.entries()).map(([key, value]) => [key, value])
+  );
+
+  queryParams.page = queryParams.page || page;
+  queryParams.categoryName = queryParams.categoryName || "";
+  queryParams.limit = queryParams.limit || limit;
+
+  const getProducts = useMutation({
+    mutationFn: () => searchProductsAdmin(queryParams as ProductSearchParamsAdmin),
+    onSuccess: (data) => {
+      setProductList(data.data.data.products);
+      setPage(String(data.data.data.page))
+      setLimit(String(data.data.data.limit))
+      setTotal(data.data.data.total)
+      console.log(data)
+    },
+    onError: () => {
+      toast.error("Lấy dữ liệu thất bại")
+    }
+
+  })
+
+  const onNext = () => {
+    const currentPage = Number(page);
+    const totalPages = Math.ceil(total / Number(limit));
+
+    if (currentPage < totalPages) {
+      searchParams.set("page", (currentPage + 1).toString());
+      setSearchParams(searchParams);
+    }
+  };
+
+  const onPrevious = () => {
+    const currentPage = Number(page);
+
+    if (currentPage > 1) {
+      searchParams.set("page", (currentPage - 1).toString());
+      setSearchParams(searchParams);
+    }
+  };
+
+
+  useEffect(() => {
+    getProducts.mutate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -16,7 +79,7 @@ const TableComponent = () => {
 
 
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <div className="p-8 relative overflow-x-auto shadow-md sm:rounded-lg">
       <div className="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
         <div>
           <button
@@ -85,9 +148,7 @@ const TableComponent = () => {
             </div>
           )}
         </div>
-        <label htmlFor="table-search" className="sr-only">
-          Search
-        </label>
+
         <div className="relative">
           <div className="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
             <svg
@@ -129,22 +190,16 @@ const TableComponent = () => {
               </div>
             </th>
             <th scope="col" className="px-6 py-3">Product name</th>
-            <th scope="col" className="px-6 py-3">Color</th>
+            <th scope="col" className="px-6 py-3">Brand</th>
             <th scope="col" className="px-6 py-3">Category</th>
             <th scope="col" className="px-6 py-3">Price</th>
             <th scope="col" className="px-6 py-3">Action</th>
           </tr>
         </thead>
         <tbody>
-          {[{ name: 'Apple MacBook Pro 17"', color: 'Silver', category: 'Laptop', price: '$2999' },
-          { name: 'Microsoft Surface Pro', color: 'White', category: 'Laptop PC', price: '$1999' },
-          { name: 'Magic Mouse 2', color: 'Black', category: 'Accessories', price: '$99' },
-          { name: 'Apple Watch', color: 'Silver', category: 'Accessories', price: '$179' },
-          { name: 'iPad', color: 'Gold', category: 'Tablet', price: '$699' },
-          { name: 'Apple iMac 27"', color: 'Silver', category: 'PC Desktop', price: '$3999' }
-          ].map((item, index) => (
+          {productList.map((item, index) => (
             <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-              <td className="w-4 p-4">
+              <td className="w-4 p-5">
                 <div className="flex items-center">
                   <input
                     id={`checkbox-table-search-${index}`}
@@ -156,9 +211,12 @@ const TableComponent = () => {
                 </div>
               </td>
               <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{item.name}</th>
-              <td className="px-6 py-4">{item.color}</td>
-              <td className="px-6 py-4">{item.category}</td>
-              <td className="px-6 py-4">{item.price}</td>
+              <td className="px-6 py-4">{item.brandName}</td>
+              <td className="px-6 py-4">{item.categoryName}</td>
+              <td className="px-6 py-4">{new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+              }).format(item.price)}</td>
               <td className="px-6 py-4">
                 <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
               </td>
@@ -166,8 +224,8 @@ const TableComponent = () => {
           ))}
         </tbody>
       </table>
+      <Pagination currentPage={Number(page)} onNext={onNext} onPrev={onPrevious} pageSize={Number(limit)} totalEntries={Number(total)} />
     </div>
   );
 };
 
-export default TableComponent;

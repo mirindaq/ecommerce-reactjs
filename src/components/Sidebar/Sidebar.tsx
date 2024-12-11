@@ -52,7 +52,7 @@ export function Sidebar() {
 
       <aside
         id="default-sidebar"
-        className="h-screen transition-transform -translate-x-full sm:translate-x-0"
+        className="h-3 sm:h-screen transition-transform -translate-x-full sm:translate-x-0"
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-green-600 dark:bg-gray-800">
