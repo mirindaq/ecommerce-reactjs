@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Fragment } from "react/jsx-runtime";
-import RadioButton from "../../../components/RadioButton/RadioButton";
-import Button from "../../../components/Button/Button";
+import RadioButton from "../../../../components/RadioButton/RadioButton";
+import Button from "../../../../components/Button/Button";
 
 export default function OrderUser() {
   const [selectedHosting, setSelectedHosting] = useState<string | null>(null);

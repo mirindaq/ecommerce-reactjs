@@ -27,7 +27,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     initialAppContext.isAuthenticated
   );
 
-  const [user, setUser] = useState<User | null>(initialAppContext.user);
+  const [user, setUser] = useState<(User & { role: string[] }) | null>(
+    initialAppContext.user
+  );
 
   return (
     <AppContext.Provider

@@ -1,9 +1,9 @@
 import { Link } from "react-router";
-import { path } from "../../../constants/path";
-import { Category } from "../../../types/category.type";
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { getAllCategory } from "../../../apis/category.api";
+import { Category } from "../../../../types/category.type";
+import { getAllCategory } from "../../../../apis/category.api";
+import { path } from "../../../../constants/path";
 
 export default function CategoryBox() {
   const [categoryList, setCategoryList] = useState<Category[]>([]);

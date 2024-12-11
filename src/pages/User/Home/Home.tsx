@@ -1,7 +1,7 @@
 import Banner from "./Banner/Banner";
 import BannerPromotion from "./BannerPromotion/BannerPromotion";
-import Promotion from "./Promotion/Promotion";
 import CategoryBox from "./CategoryBox/CategoryBox";
+import Promotion from "./Promotion/Promotion";
 
 export default function Home() {
 

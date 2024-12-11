@@ -11,16 +11,13 @@ export const removeAccessTokenFromLocalStorage = () => {
 export const getAccessTokenFromLocalStorage = () =>
   localStorage.getItem("accessToken") || "";
 
-export const getUserFromLocalStorage = () => {
-  const result = localStorage.getItem("user");
-  if (result) {
-    return JSON.parse(result);
-  }
-  return null;
-};
+export function getUserFromLocalStorage(): (User & { role: string[] }) | null {
+  const user = localStorage.getItem("user");
+  return user ? JSON.parse(user) : null;
+}
 
-export const setUserToLocalStorage = (user: User) => {
-  const userString = JSON.stringify(user);
+export const setUserToLocalStorage = (user: User, role: string[]) => {
+  const userString = JSON.stringify({ ...user, role });
   localStorage.setItem("user", userString);
 };
 

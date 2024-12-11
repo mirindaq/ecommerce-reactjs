@@ -1,16 +1,16 @@
 import { Fragment } from "react/jsx-runtime";
-import Input from "../../../components/Input/Input";
+import Input from "../../../../components/Input/Input";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ProfileSchema, profileSchema } from "../../../utils/rules";
-import Button from "../../../components/Button/Button";
+import { ProfileSchema, profileSchema } from "../../../../utils/rules";
+import Button from "../../../../components/Button/Button";
 import { useContext } from "react";
 import { useMutation } from "@tanstack/react-query";
-import userApi from "../../../apis/user.api";
+import userApi from "../../../../apis/user.api";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
-import { AppContext } from "../../../contexts/app.context";
-import { path } from "../../../constants/path";
+import { AppContext } from "../../../../contexts/app.context";
+import { path } from "../../../../constants/path";
 
 type FormData = ProfileSchema;
 

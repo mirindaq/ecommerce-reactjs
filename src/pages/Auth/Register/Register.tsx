@@ -1,53 +1,62 @@
+import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
-import { useForm, SubmitHandler } from "react-hook-form";
-import Input from "../../components/Input/Input";
-import { loginSchema, LoginSchema } from "../../utils/rules";
+import Input from "../../../components/Input/Input";
+import { registerSchema, RegisterSchema } from "../../../utils/rules";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
-import { loginAccount } from "../../apis/auth.api";
-import { toast } from "react-toastify";
-import { useContext } from "react";
-import { AppContext } from "../../contexts/app.context";
-import Button from "../../components/Button/Button";
-import { path } from "../../constants/path";
+import { registerAccount } from "../../../apis/auth.api";
+import { isAxiosConflictError } from "../../../utils/utils";
+import { ResponseApi } from "../../../types/utils.type";
+import Button from "../../../components/Button/Button";
+import { path } from "../../../constants/path";
 
-type FormData = LoginSchema;
-export default function Login() {
-  const { setIsAuthenticated, setUser } = useContext(AppContext);
+type FormData = RegisterSchema;
+
+export default function Register() {
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
+    setError,
     reset,
     formState: { errors },
   } = useForm<FormData>({
     mode: "onSubmit",
     reValidateMode: "onChange",
-    resolver: yupResolver(loginSchema),
+    resolver: yupResolver(registerSchema),
   });
 
-  const loginAccountMutation = useMutation({
-    mutationFn: (body: { email: string; password: string }) => {
-      return loginAccount(body);
-    },
+  const registerAccountMutation = useMutation({
+    mutationFn: (body: Omit<FormData, "confirmPassword">) =>
+      registerAccount(body),
   });
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
-    loginAccountMutation.mutate(data, {
-      onSuccess: (data) => {
+    registerAccountMutation.mutate(data, {
+      onSuccess: () => {
+        alert("Đăng ký thành công");
+        navigate(path.login);
         reset();
-        setIsAuthenticated(true);
-        console.log(data.data.data.user);
-        setUser(data.data.data.user);
-        toast.success("Đăng nhập thành công");
-        navigate(path.home);
       },
-      onError: () => {
-        toast.error("Email hoặc mật khẩu không chính xác");
+      onError: (error) => {
+        if (
+          isAxiosConflictError<ResponseApi<Omit<FormData, "confirmPassword">>>(
+            error
+          )
+        ) {
+          const formError = error.response?.data.data;
+          if (formError?.email) {
+            setError("email", {
+              message: formError.email,
+              type: "Server",
+            });
+          }
+        }
       },
     });
   };
+
   return (
     <>
       <div className="bg-slate-100">
@@ -61,14 +70,15 @@ export default function Login() {
               />
             </div>
 
-            <div className="my-12 lg:col-span-3 lg:col-start-4 lg:my-0 lg:mx-0 ">
+            <div className="my-12 mx-20 lg:col-span-3 lg:col-start-4 lg:my-0 lg:mx-0 ">
               <form
-                onSubmit={handleSubmit(onSubmit)}
                 className="bg-white shadow-lg rounded-3xl px-8 py-8 sm:px-16 sm:py-12 mb-4 w-full mx-auto"
+                onSubmit={handleSubmit(onSubmit)}
               >
+                {/* Username input */}
                 <div className="mb-6">
                   <label
-                    htmlFor="email"
+                    htmlFor="username"
                     className="block text-sm  font-semibold text-gray-800 mb-3"
                   >
                     Email
@@ -103,31 +113,38 @@ export default function Login() {
                     className="shadow-md appearance-none border border-gray-300 rounded-full w-full py-3.5 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
                   />
                 </div>
+                <div className="mb-6">
+                  <label
+                    htmlFor="againPassword"
+                    className="block text-sm  font-semibold text-gray-800 mb-3"
+                  >
+                    Nhập lại mật khẩu
+                  </label>
+                  <Input
+                    name="confirmPassword"
+                    register={register}
+                    type="password"
+                    errorMassage={errors.confirmPassword?.message}
+                    placeholder="Password"
+                    defaultValue=""
+                    disabled={false}
+                    className="shadow-md appearance-none border border-gray-300 rounded-full w-full py-3.5 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
+                  />
+                </div>
                 <div>
                   <Button
                     className="w-full bg-orange-400 hover:bg-orange-500 text-white font-semibold py-4 px-6 rounded-full transition-all duration-300 flex justify-center items-center"
                     type="submit"
-                    disabled={loginAccountMutation.isPending}
-                    isLoading={loginAccountMutation.isPending}
+                    disabled={registerAccountMutation.isPending}
+                    isLoading={registerAccountMutation.isPending}
                   >
-                    Đăng nhập
+                    Đăng ký
                   </Button>
                 </div>
-                <div className="mt-4 text-center">
-                  <a
-                    className="text-sm text-black hover:text-yellow-600"
-                    href="#"
-                  >
-                    Quên mật khẩu
-                  </a>
-                </div>
-
                 <div className="flex items-center justify-center mt-8">
-                  <div className="text-gray-500 mr-2">
-                    Bạn chưa có tài khoản
-                  </div>
-                  <Link to={path.register} className="text-orange-500">
-                    Đăng ký
+                  <div className="text-gray-500 mr-2">Bạn đã có tài khoản</div>
+                  <Link to={path.login} className="text-orange-500">
+                    Đăng nhập
                   </Link>
                 </div>
               </form>

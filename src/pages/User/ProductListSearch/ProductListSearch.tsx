@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Product, ProductSearchParams } from "../../types/product.type";
+import { Product, ProductSearchParams } from "../../../types/product.type";
 import { useMutation } from "@tanstack/react-query";
-import ProductList from "../../components/ProductList/ProductList";
-import { searchProducts } from "../../apis/product.api";
+import ProductList from "../../../components/ProductList/ProductList";
+import { searchProducts } from "../../../apis/product.api";
 import BrandBox from "./components/BrandBox/BrandBox";
-import { Brand } from "../../types/brand.type";
-import { getBrandByCategory } from "../../apis/brand.api";
+import { Brand } from "../../../types/brand.type";
+import { getBrandByCategory } from "../../../apis/brand.api";
 import { useSearchParams } from "react-router";
 import SortBox from "./components/SortBox/SortBox";
 import { FaArrowDown } from "react-icons/fa";
@@ -147,7 +147,6 @@ export default function ProductListSearch() {
               font-bold text-sm bg-white border border-blue-400 flex items-center hover:cursor-pointer">
                 <span className="pr-1">Xem thêm {count} </span>
                 <FaArrowDown /></button>)}
-
             </div>
           </div>
         </div>

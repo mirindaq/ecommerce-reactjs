@@ -1,12 +1,12 @@
 import { FaFileInvoice } from "react-icons/fa";
 import { ImProfile } from "react-icons/im";
 import { NavLink, Outlet, useNavigate } from "react-router";
-import { path } from "../../constants/path";
-import Button from "../../components/Button/Button";
+import { path } from "../../../constants/path";
+import Button from "../../../components/Button/Button";
 import { useMutation } from "@tanstack/react-query";
-import { logoutAccount } from "../../apis/auth.api";
+import { logoutAccount } from "../../../apis/auth.api";
 import { useContext } from "react";
-import { AppContext } from "../../contexts/app.context";
+import { AppContext } from "../../../contexts/app.context";
 import { toast } from "react-toastify";
 export default function Profile() {
   const navigate = useNavigate();

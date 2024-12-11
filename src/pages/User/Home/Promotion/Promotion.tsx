@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import ProductList from "../../../components/ProductList/ProductList";
 import NavigationBox from "./components/NavigationBox/NavigationBox";
 import { useMutation } from "@tanstack/react-query";
-import { getAllProducts } from "../../../apis/product.api";
-import { Product } from "../../../types/product.type";
+import { Product } from "../../../../types/product.type";
+import { getAllProducts } from "../../../../apis/product.api";
+import ProductList from "../../../../components/ProductList/ProductList";
+
 
 export default function Promotion() {
   const [productList, setProductList] = useState<Product[]>([]);

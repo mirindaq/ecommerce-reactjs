@@ -1,6 +1,6 @@
-import Skeleton from "../../pages/Home/Promotion/components/Skeleton/Skeleton";
 import ProductBox from "../ProductBox/ProductBox";
 import { Product } from "../../types/product.type";
+import Skeleton from "../../pages/User/Home/Promotion/components/Skeleton/Skeleton";
 
 interface ProductListProps {
   productList: Product[];

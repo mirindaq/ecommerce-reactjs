@@ -4,6 +4,7 @@ import { AuthLogin } from "../types/auth.type";
 import {
   getAccessTokenFromLocalStorage,
   removeAccessTokenFromLocalStorage,
+  removeUserFromLocalStorage,
   setAccessTokenToLocalStorage,
   setUserToLocalStorage,
 } from "./auth";
@@ -39,9 +40,10 @@ class Http {
           const responseData = response.data as AuthLogin;
           this.accessToken = responseData.data.accessToken;
           setAccessTokenToLocalStorage(this.accessToken);
-          setUserToLocalStorage(responseData.data.user);
+          setUserToLocalStorage(responseData.data.user, responseData.data.role);
         } else if (url === path.logout) {
           this.accessToken = "";
+          removeUserFromLocalStorage();
           removeAccessTokenFromLocalStorage();
         }
         return response;

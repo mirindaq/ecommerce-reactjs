@@ -1,5 +1,4 @@
 import FormSearch from "./FormSearch/FormSearch";
-import { Fragment } from "react/jsx-runtime";
 import { CiShoppingCart, CiUser } from "react-icons/ci";
 import { Link } from "react-router";
 import { useContext } from "react";
@@ -9,7 +8,7 @@ export default function HeaderDefault() {
   const { isAuthenticated, user } = useContext(AppContext);
 
   return (
-    <Fragment>
+    <>
       <header>
         <nav className="bg-yellow-300 border-gray-200 px-4 lg:px-6 py-5 dark:bg-gray-800">
           <div className="grid grid-cols-12">
@@ -59,6 +58,6 @@ export default function HeaderDefault() {
           </div>
         </nav>
       </header>
-    </Fragment>
+    </>
   );
 }
