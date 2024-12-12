@@ -5,6 +5,13 @@ import { Product, ProductSearchParamsAdmin } from '../../types/product.type';
 import { toast } from 'react-toastify';
 import { useSearchParams } from 'react-router';
 import Pagination from '../Pagination/Pagination';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { Category } from '../../types/category.type';
+import { getAllCategory } from '../../apis/category.api';
+import { getAllBrands } from '../../apis/brand.api';
+import { Brand } from '../../types/brand.type';
+
+type FormInput = Omit<ProductSearchParamsAdmin, "sortBy" | "sortOrder" | "limit" | "page" | "discount">
 
 export type QueryConfig = {
   // eslint-disable-next-line no-unused-vars
@@ -12,9 +19,9 @@ export type QueryConfig = {
 }
 
 export default function TableComponent() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState('Last 7 days');
   const [productList, setProductList] = useState<Product[]>([])
+  const [categoryList, setCategoryList] = useState<Category[]>([])
+  const [brandList, setBrandList] = useState<Brand[]>([])
   const [page, setPage] = useState<string>("1");
   const [limit, setLimit] = useState<string>("4");
   const [total, setTotal] = useState<number>(0);
@@ -34,10 +41,31 @@ export default function TableComponent() {
       setPage(String(data.data.data.page))
       setLimit(String(data.data.data.limit))
       setTotal(data.data.data.total)
-      console.log(data)
     },
     onError: () => {
       toast.error("Lấy dữ liệu thất bại")
+    }
+
+  })
+
+  const getCategories = useMutation({
+    mutationFn: () => getAllCategory(),
+    onSuccess: (data) => {
+      setCategoryList(data.data.data.categories);
+    },
+    onError: () => {
+      toast.error("Lấy danh sách loại sản phẩm thất bại")
+    }
+  })
+
+  const getBrands = useMutation({
+    mutationFn: () => getAllBrands(),
+    onSuccess: (data) => {
+      console.log(data)
+      setBrandList(data.data.data.brands)
+    },
+    onError: () => {
+      toast.error("Lấy danh sách hãng thất bại");
     }
 
   })
@@ -61,118 +89,164 @@ export default function TableComponent() {
     }
   };
 
+  useEffect(() => {
+    getCategories.mutate();
+    getBrands.mutate()
+  }, [])
+
 
   useEffect(() => {
     getProducts.mutate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
 
-  const handleFilterChange = (filter: string) => {
-    setSelectedFilter(filter);
-    setDropdownOpen(false);
+  const { register, handleSubmit, reset } = useForm<FormInput>();
+
+  const submitFormSearch: SubmitHandler<FormInput> = (data) => {
+    console.log("Form Data:", data);
   };
 
 
 
   return (
-    <div className="p-8 relative overflow-x-auto shadow-md sm:rounded-lg">
-      <div className="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
-        <div>
-          <button
-            id="dropdownRadioButton"
-            onClick={toggleDropdown}
-            className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-            type="button"
-          >
-            <svg
-              className="w-3 h-3 text-gray-500 dark:text-gray-400 me-3"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
-            </svg>
-            {selectedFilter}
-            <svg
-              className="w-2.5 h-2.5 ms-2.5"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 10 6"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="m1 1 4 4 4-4"
-              />
-            </svg>
-          </button>
-
-          {dropdownOpen && (
-            <div className="z-10 w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600 absolute">
-              <ul
-                className="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200"
-                aria-labelledby="dropdownRadioButton"
-              >
-                {['Last day', 'Last 7 days', 'Last 30 days', 'Last month', 'Last year'].map((filter) => (
-                  <li key={filter}>
-                    <div
-                      className={`flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600 ${selectedFilter === filter ? 'bg-gray-100 dark:bg-gray-600' : ''
-                        }`}
-                      onClick={() => handleFilterChange(filter)}
-                    >
-                      <input
-                        type="radio"
-                        value={filter}
-                        name="filter-radio"
-                        checked={selectedFilter === filter}
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                      />
-                      <label
-                        htmlFor={`filter-radio-${filter}`}
-                        className="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
-                      >
-                        {filter}
-                      </label>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
-            <svg
-              className="w-5 h-5 text-gray-500 dark:text-gray-400"
-              aria-hidden="true"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                clipRule="evenodd"
-              ></path>
-            </svg>
+    <div className="p-8 relative overflow-x-auto">
+      <form onSubmit={handleSubmit(submitFormSearch)} className="space-y-4 p-6 bg-white shadow rounded-md">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className='col-span-1 md:col-span-2 lg:col-span-3'>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Tên sản phẩm</label>
+            <input
+              type="text"
+              id="name"
+              {...register("name")}
+              placeholder="Tên sản phẩm"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+            />
           </div>
-          <input
-            type="text"
-            id="table-search"
-            className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="Search for items"
-          />
+
+          <div>
+            <label htmlFor="minPrice" className="block text-sm font-medium text-gray-700">Giá thấp nhất</label>
+            <input
+              type="number"
+              id="minPrice"
+              {...register("minPrice")}
+              placeholder="Giá thấp nhất"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="maxPrice" className="block text-sm font-medium text-gray-700">Giá cao nhất</label>
+            <input
+              type="number"
+              id="maxPrice"
+              {...register("maxPrice")}
+              placeholder="Giá cao nhất"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="brandName" className="block text-sm font-medium text-gray-700">Hãng</label>
+            <select
+              id="brandName"
+              {...register("brandName")}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Lựa chọn</option>
+              {brandList.map((item) => (
+                <option key={item.id} value={item.name}>{item.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="categoryName" className="block text-sm font-medium text-gray-700">Loại sản phẩm</label>
+            <select
+              id="categoryName"
+              {...register("categoryName")}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Lựa chọn</option>
+              {categoryList.map((item) => (
+                <option key={item.id} value={item.name}>{item.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="active" className="block text-sm font-medium text-gray-700">Hoạt động</label>
+            <select
+              id="active"
+              {...register("active")}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Select</option>
+              <option value="true">Còn hoạt động</option>
+              <option value="false">Dừng hoạt động</option>
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="createdDateFrom" className="block text-sm font-medium text-gray-700">Ngày tạo từ</label>
+            <input
+              type="date"
+              id="createdDateFrom"
+              {...register("createdDateFrom")}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="createdDateTo" className="block text-sm font-medium text-gray-700">Ngày tạo đến</label>
+            <input
+              type="date"
+              id="createdDateTo"
+              {...register("createdDateTo")}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="createdBy" className="block text-sm font-medium text-gray-700">Tạo bởi</label>
+            <input
+              type="text"
+              id="createdBy"
+              {...register("createdBy")}
+              placeholder="Creator"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="modifiedBy" className="block text-sm font-medium text-gray-700">Chỉnh sửa bởi</label>
+            <input
+              type="text"
+              id="modifiedBy"
+              {...register("modifiedBy")}
+              placeholder="Modifier"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
         </div>
-      </div>
+
+        <div className="flex space-x-4 mt-4">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          >
+            Search
+          </button>
+          <button
+            type="button"
+            onClick={() => reset()}
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+          >
+            Reset
+          </button>
+        </div>
+      </form>
+
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
@@ -189,11 +263,13 @@ export default function TableComponent() {
                 </label>
               </div>
             </th>
-            <th scope="col" className="px-6 py-3">Product name</th>
-            <th scope="col" className="px-6 py-3">Brand</th>
-            <th scope="col" className="px-6 py-3">Category</th>
-            <th scope="col" className="px-6 py-3">Price</th>
-            <th scope="col" className="px-6 py-3">Action</th>
+            <th scope="col" className="px-6 py-3">Tên sản phẩm</th>
+            <th scope="col" className="px-6 py-3">Hãng</th>
+            <th scope="col" className="px-6 py-3">Loại sản phẩm</th>
+            <th scope="col" className="px-6 py-3">Giá</th>
+            <th scope="col" className="px-6 py-3">Giảm giá</th>
+            <th scope="col" className="px-6 py-3">Tồn kho</th>
+            <th scope="col" className="px-6 py-3">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -217,6 +293,8 @@ export default function TableComponent() {
                 style: 'currency',
                 currency: 'VND',
               }).format(item.price)}</td>
+              <td className="px-6 py-4">{item.discount}%</td>
+              <td className="px-6 py-4">{item.stock}</td>
               <td className="px-6 py-4">
                 <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
               </td>

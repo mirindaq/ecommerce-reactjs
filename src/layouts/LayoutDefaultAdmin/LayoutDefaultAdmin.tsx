@@ -9,11 +9,11 @@ export default function LayoutDefaultAdmin({ children }: Props) {
   return (
     <>
 
-      <div className="grid grid-cols-12">
-        <div className="col-span-12 sm:col-span-2">
+      <div className="grid grid-cols-8">
+        <div className="col-span-12 sm:col-span-1">
           <Sidebar />
         </div>
-        <div className="col-span-12 sm:col-span-10">
+        <div className="col-span-12 sm:col-span-7">
           <HeaderAdmin />
           {children}
         </div>

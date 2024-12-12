@@ -8,7 +8,7 @@ import { path } from "../../constants/path";
 
 export function Sidebar() {
 
-  const { user, setIsAuthenticated, setUser } = useContext(AppContext)
+  const { setIsAuthenticated, setUser } = useContext(AppContext)
   const navigate = useNavigate();
 
   const logoutMutation = useMutation({
@@ -55,18 +55,18 @@ export function Sidebar() {
         className="h-3 sm:h-screen transition-transform -translate-x-full sm:translate-x-0"
         aria-label="Sidebar"
       >
-        <div className="h-full px-3 py-4 overflow-y-auto bg-green-600 dark:bg-gray-800">
+        <div className="h-full px-3 py-4 overflow-y-auto bg-yellow-300 dark:bg-gray-800">
           <ul className="space-y-2 font-medium">
             <li className="my-4">
-              <span className="ms-2 text-xl font-semibold text-white">Xin chào, {user?.fullName}</span>
+              <span className="ms-2 text-xl font-semibold text-black">Admin</span>
             </li>
             <NavLink to={path.adminDashboard}>
               <div
 
-                className="flex items-center px-3 py-4 text-white rounded-lg bg-green-600 hover:bg-green-700"
+                className="flex items-center px-3 py-4 text-black rounded-lg bg-yellow-300 hover:bg-yellow-400"
               >
                 <svg
-                  className="w-5 h-5 text-white transition duration-75"
+                  className="w-5 h-5 text-black transition duration-75"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -75,15 +75,15 @@ export function Sidebar() {
                   <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
                   <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
                 </svg>
-                <span className="ms-3 text-white text-xl">Tổng quan</span>
+                <span className="ms-3 text-black text-lg">Tổng quan</span>
               </div>
             </NavLink>
             <NavLink to={path.adminProduct}>
               <div
-                className="flex items-center px-3 py-4 text-white rounded-lg bg-green-600 hover:bg-green-700"
+                className="flex items-center px-3 py-4 text-black rounded-lg bg-yellow-300 hover:bg-yellow-400"
               >
                 <svg
-                  className="w-5 h-5 text-white transition duration-75"
+                  className="w-5 h-5 text-black transition duration-75"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -92,15 +92,15 @@ export function Sidebar() {
                   <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
                   <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
                 </svg>
-                <span className="ms-3 text-white text-xl">Quản lý sản phẩm</span>
+                <span className="ms-3 text-black text-lg">Quản lý sản phẩm</span>
               </div>
             </NavLink>
-            <li>
+            <button onClick={handleLogout} className="w-full">
               <div
-                className="flex items-center px-3 py-4 text-white rounded-lg bg-green-600 hover:bg-green-700"
+                className="flex items-center px-3 py-4 text-black rounded-lg bg-yellow-300 hover:bg-yellow-400"
               >
                 <svg
-                  className="w-5 h-5 text-white transition duration-75"
+                  className="w-5 h-5 text-black transition duration-75"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -109,9 +109,9 @@ export function Sidebar() {
                   <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
                   <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
                 </svg>
-                <button onClick={handleLogout} className="ms-3 text-white text-xl">Đăng xuất</button>
+                <p className="ms-3 text-black text-lg">Đăng xuất</p>
               </div>
-            </li>
+            </button>
 
 
 
