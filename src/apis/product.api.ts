@@ -1,4 +1,5 @@
 import {
+  Product,
   ProductSearchParams,
   ProductSearchParamsAdmin,
   SuccessProduct,
@@ -6,17 +7,28 @@ import {
 } from "../types/product.type";
 import http from "../utils/http";
 
-export const getAllProducts = () => {
-  return http.get<SuccessProductList>("/admin/products");
-};
+export const productApi = {
+  getAllProducts: () => {
+    return http.get<SuccessProductList>("/admin/products");
+  },
 
-export const getProductById = (id: number) => {
-  return http.get<SuccessProduct>(`/products/${id}`);
-};
+  getProductById: (id: number) => {
+    return http.get<SuccessProduct>(`/products/${id}`);
+  },
 
-export const searchProducts = (params: ProductSearchParams) => {
-  return http.get<SuccessProductList>("/products", { params });
-};
-export const searchProductsAdmin = (params: ProductSearchParamsAdmin) => {
-  return http.get<SuccessProductList>("/products", { params });
+  searchProducts: (params: ProductSearchParams) => {
+    return http.get<SuccessProductList>("/products", { params });
+  },
+
+  searchProductsAdmin: (params: ProductSearchParamsAdmin) => {
+    return http.get<SuccessProductList>("/admin/products", { params });
+  },
+
+  addProduct: (data: Product) => {
+    return http.post<SuccessProduct>("/admin/products", data);
+  },
+
+  updateProduct: (id: number, data: Product) => {
+    return http.put<SuccessProduct>(`/admin/products/${id}`, data);
+  },
 };

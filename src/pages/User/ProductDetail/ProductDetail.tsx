@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getProductById } from "../../../apis/product.api";
+import {  productApi } from "../../../apis/product.api";
 import { useMutation } from "@tanstack/react-query";
 import { Product } from "../../../types/product.type";
 import { useParams } from "react-router";
@@ -12,7 +12,7 @@ const ProductDetail = () => {
   const [mainImage, setMainImage] = useState(product?.images[0]);
 
   const getProduct = useMutation({
-    mutationFn: () => getProductById(Number(id)),
+    mutationFn: () => productApi.getProductById(Number(id)),
     onSuccess: (data) => {
       setIsLoading(false);
       setProduct(data.data.data.product);

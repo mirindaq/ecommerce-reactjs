@@ -11,42 +11,48 @@ import OrderUser from "./pages/User/Profile/OrderUser/OrderUser";
 import ProductDetail from "./pages/User/ProductDetail/ProductDetail";
 import ProductListSearch from "./pages/User/ProductListSearch/ProductListSearch";
 import Error404 from "./pages/Errors/Error404/Error404";
-
 import Error401 from "./pages/Errors/Error401/Error401";
 import Home from "./pages/User/Home/Home";
 import AdminDashboard from "./pages/Admin/AdminDashboard/AdminDashboard";
 import LayoutDefaultAdmin from "./layouts/LayoutDefaultAdmin/LayoutDefaultAdmin";
+import AddProduct from "./pages/Admin/ManagerProduct/components/AddProduct";
 import ManagerProduct from "./pages/Admin/ManagerProduct/ManagerProduct";
+import ListProduct from "./pages/Admin/ManagerProduct/components/ListProduct";
+
+// Moved outside of the main function to avoid re-creation
+function ProtectedRoute() {
+  const { isAuthenticated } = useContext(AppContext);
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
+}
+
+function RejectedRoute() {
+  const { isAuthenticated, user } = useContext(AppContext);
+
+  if (isAuthenticated) {
+    if (user?.role?.includes("ROLE_ADMIN")) {
+      return <Navigate to="/admin/dashboard" />;
+    }
+    return <Navigate to="/" />;
+  }
+
+  return <Outlet />;
+}
+
+function AdminRoute() {
+  const { isAuthenticated, user } = useContext(AppContext);
+
+  if (!isAuthenticated) {
+    return <Navigate to={path.login} />;
+  }
+
+  if (!user?.role?.includes("ROLE_ADMIN")) {
+    return <Navigate to={path.error401} />;
+  }
+
+  return <Outlet />;
+}
 
 export default function useRouteElement() {
-  function ProtectedRoute() {
-    const { isAuthenticated } = useContext(AppContext);
-    return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
-  }
-
-  function RejectedRoute() {
-    const { isAuthenticated, user } = useContext(AppContext);
-
-    if (isAuthenticated) {
-      console.log(user)
-      console.log(user?.role)
-      if (user?.role?.includes("ROLE_ADMIN")) {
-        return <Navigate to="/admin/dashboard" />;
-      }
-      return <Navigate to="/" />;
-    }
-
-    return <Outlet />;
-  }
-
-  function AdminRoute() {
-    const { user } = useContext(AppContext);
-    if (!user?.role?.includes("ROLE_ADMIN")) {
-      return <Navigate to={path.error401} />;
-    }
-    return <Outlet />;
-  }
-
   const element = useRoutes([
     //Các route public
     {
@@ -76,7 +82,7 @@ export default function useRouteElement() {
         </LayoutDefault>
       ),
     },
-    // Route phải đăng nhập thì mới vào được
+    // Route phải đăng nhập
     {
       path: "",
       element: <ProtectedRoute />,
@@ -89,20 +95,13 @@ export default function useRouteElement() {
             </LayoutDefault>
           ),
           children: [
-            {
-              path: path.information,
-              element: <Information />,
-            },
-            {
-              path: "",
-              element: <OrderUser />,
-            },
+            { path: path.information, element: <Information /> },
+            { path: "", element: <OrderUser /> },
           ],
         },
       ],
     },
-
-    //Route khi đã đăng nhập thì không được vào
+    // Route khi đã đăng nhập thì không được vào
     {
       path: "",
       element: <RejectedRoute />,
@@ -125,8 +124,7 @@ export default function useRouteElement() {
         },
       ],
     },
-
-    //Admin route
+    // Admin route
     {
       path: "",
       element: <AdminRoute />,
@@ -134,7 +132,7 @@ export default function useRouteElement() {
         {
           path: path.adminDashboard,
           element: (
-            <LayoutDefaultAdmin >
+            <LayoutDefaultAdmin>
               <AdminDashboard />
             </LayoutDefaultAdmin>
           ),
@@ -142,15 +140,23 @@ export default function useRouteElement() {
         {
           path: path.adminProduct,
           element: (
-            <LayoutDefaultAdmin >
+            <LayoutDefaultAdmin>
               <ManagerProduct />
             </LayoutDefaultAdmin>
           ),
+          children: [
+            {
+              path: "",
+              element: (
+                <ListProduct />
+              ),
+            },
+            { path: path.adminProductAdd, element: <AddProduct /> },
+          ]
+          ,
         },
-
       ],
     },
-
     {
       path: path.error401,
       element: (
@@ -159,12 +165,7 @@ export default function useRouteElement() {
         </LayoutDefault>
       ),
     },
-    {
-      path: "*",
-      element: (
-        <Error404 />
-      ),
-    },
+    { path: "*", element: <Error404 /> },
   ]);
 
   return element;

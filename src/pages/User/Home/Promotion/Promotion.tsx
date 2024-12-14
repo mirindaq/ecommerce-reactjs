@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import NavigationBox from "./components/NavigationBox/NavigationBox";
 import { useMutation } from "@tanstack/react-query";
 import { Product } from "../../../../types/product.type";
-import { getAllProducts } from "../../../../apis/product.api";
+import { productApi } from "../../../../apis/product.api";
 import ProductList from "../../../../components/ProductList/ProductList";
 
 
@@ -11,7 +11,7 @@ export default function Promotion() {
   const [isLoading, setIsLoading] = useState(true); // Set to true initially
 
   const getAllProduct = useMutation({
-    mutationFn: () => getAllProducts(),
+    mutationFn: () => productApi.getAllProducts(),
     onSuccess: (data) => {
       setIsLoading(false);
       setProductList(data.data.data.products);

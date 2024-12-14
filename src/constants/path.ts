@@ -11,6 +11,7 @@ export const path = {
   productClient: "/products",
   adminDashboard: "/admin/dashboard",
   adminProduct: "/admin/products",
+  adminProductAdd: "/admin/products/add",
   error401: "/401",
   error404: "/404",
 };

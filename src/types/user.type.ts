@@ -1,3 +1,5 @@
+import { ResponseApi } from "./utils.type";
+
 export interface User {
   id: number;
   address: string;
@@ -12,3 +14,10 @@ export interface User {
   modifiedBy: string | null;
   role: string[];
 }
+
+export type SuccessUserList = ResponseApi<{
+  users: User[];
+  total: number;
+  page: number;
+  limit: number;
+}>;

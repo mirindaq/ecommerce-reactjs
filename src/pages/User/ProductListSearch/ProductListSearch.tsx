@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Product, ProductSearchParams } from "../../../types/product.type";
 import { useMutation } from "@tanstack/react-query";
 import ProductList from "../../../components/ProductList/ProductList";
-import { searchProducts } from "../../../apis/product.api";
+import { productApi } from "../../../apis/product.api";
 import BrandBox from "./components/BrandBox/BrandBox";
 import { Brand } from "../../../types/brand.type";
 import { getBrandByCategory } from "../../../apis/brand.api";
@@ -46,7 +46,7 @@ export default function ProductListSearch() {
   });
 
   const searchProduct = useMutation({
-    mutationFn: () => searchProducts(queryParams as ProductSearchParams),
+    mutationFn: () => productApi.searchProducts(queryParams as ProductSearchParams),
     onSuccess: (productResponse) => {
       setProductList(productResponse.data.data.products);
       setCount(
@@ -67,7 +67,7 @@ export default function ProductListSearch() {
   });
 
   const searchProductMore = useMutation({
-    mutationFn: (query: ProductSearchParams) => searchProducts(query),
+    mutationFn: (query: ProductSearchParams) => productApi.searchProducts(query),
     onSuccess: (productResponse) => {
       setProductList([...productList, ...productResponse.data.data.products]);
       setCount(

@@ -1,4 +1,3 @@
-import { Fragment } from "react/jsx-runtime";
 import Input from "../../../../components/Input/Input";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -47,7 +46,7 @@ export default function Information() {
   };
 
   return (
-    <Fragment>
+    <>
       <div className="bg-white border rounded-lg px-8 py-8 sm:px-16 sm:py-12 mb-4 w-full mx-auto">
         <h3 className="font-semibold text-xl mb-5">THÔNG TIN CÁ NHÂN</h3>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -139,6 +138,6 @@ export default function Information() {
           </div>
         </form>
       </div>
-    </Fragment>
+    </>
   );
 }

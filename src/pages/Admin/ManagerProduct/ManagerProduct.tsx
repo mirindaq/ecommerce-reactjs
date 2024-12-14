@@ -1,9 +1,9 @@
-import TableComponent from "../../../components/TableComponent/TableComponent";
+import { Outlet } from "react-router";
 
 export default function ManagerProduct() {
   return (
     <>
-      <TableComponent />
+      <Outlet />
     </>
   )
 }
