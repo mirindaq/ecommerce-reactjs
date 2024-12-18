@@ -81,6 +81,8 @@ export default function AddProduct() {
     mutationFn: (submitData: FormData) => productApi.addProduct(submitData),
     onSuccess: () => {
       toast.success("Thêm sản phẩm thành công");
+
+      setSelectedImages([]);
       reset();
     },
     onError: () => {
@@ -118,7 +120,6 @@ export default function AddProduct() {
     addProduct.mutate(formData)
 
   };
-
 
 
 
@@ -227,16 +228,16 @@ export default function AddProduct() {
             accept="image/*"
             multiple
             onChange={handleImageChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
+            className="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-300"
           />
           {selectedImages.length > 0 && (
-            <div className="mt-2 grid grid-cols-4 gap-2">
+            <div className="mt-2 grid grid-cols-8 gap-2">
               {selectedImages.map((file, index) => (
                 <img
                   key={index}
                   src={URL.createObjectURL(file)}
                   alt={`Ảnh ${index + 1}`}
-                  className="w-full h-24 object-cover rounded-md"
+                  className="w-full h-full object-cover rounded-md"
                 />
               ))}
             </div>
@@ -253,7 +254,6 @@ export default function AddProduct() {
         >
           Đăng nhập
         </Button>
-
       </form>
     </div>
   );
