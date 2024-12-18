@@ -1,6 +1,5 @@
 import { Link } from "react-router";
 import { Product } from "../../types/product.type";
-import { path } from "../../constants/path";
 
 interface ProductBoxProps {
   product: Product;
@@ -9,6 +8,7 @@ interface ProductBoxProps {
 export default function ProductBox(props: ProductBoxProps) {
   const { product } = props;
   const attribute = product.attributeList;
+  console.log(product)
   return (
     <Link
       to={`/products/${product.id}`}

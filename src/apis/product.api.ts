@@ -5,6 +5,7 @@ import {
   SuccessProduct,
   SuccessProductList,
 } from "../types/product.type";
+import { getAccessTokenFromLocalStorage } from "../utils/auth";
 import http from "../utils/http";
 
 export const productApi = {
@@ -24,8 +25,14 @@ export const productApi = {
     return http.get<SuccessProductList>("/admin/products", { params });
   },
 
-  addProduct: (data: Product) => {
-    return http.post<SuccessProduct>("/admin/products", data);
+  addProduct: (data: FormData) => {
+      const token = getAccessTokenFromLocalStorage();
+    return http.post<SuccessProduct>("/admin/products", data, {
+      headers: {
+        "Content-Type": "multipart/form-data", 
+        Authorization: `Bearer ${token}`,
+      },
+    });
   },
 
   updateProduct: (id: number, data: Product) => {

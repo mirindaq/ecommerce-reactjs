@@ -6,21 +6,37 @@ import { useMutation } from '@tanstack/react-query';
 import { getAllBrands } from '../../../../apis/brand.api';
 import { getAllCategory } from '../../../../apis/category.api';
 import { useForm } from 'react-hook-form';
+import { productApi } from '../../../../apis/product.api';
+import { Attribute } from '../../../../types/product.type';
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import Button from '../../../../components/Button/Button';
 
-type FormData = {
+
+export type FormDataAddProduct = {
   name: string;
   price: number;
   stock: number;
   description: string;
   brandName: string;
   categoryName: string;
-  attributes: { value: string }[]; // Phần này xử lý các thuộc tính động
+  attributes: Attribute[];
+  images: File[]
 };
 
 export default function AddProduct() {
   const [categoryList, setCategoryList] = useState<Category[]>([]);
   const [brandList, setBrandList] = useState<Brand[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      setSelectedImages(Array.from(files));
+    }
+  };
+
 
   const getCategories = useMutation({
     mutationFn: () => getAllCategory(),
@@ -43,12 +59,13 @@ export default function AddProduct() {
     }
   });
 
+
   useEffect(() => {
     getCategories.mutate();
     getBrands.mutate();
   }, []);
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>();
+  const { register, handleSubmit, watch, setValue, reset, formState: { errors } } = useForm<FormDataAddProduct>();
 
   const categoryName = watch("categoryName");
 
@@ -59,10 +76,52 @@ export default function AddProduct() {
     }
   }, [categoryName, categoryList]);
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-    // Bạn có thể gọi API để thêm sản phẩm ở đây
+
+  const addProduct = useMutation({
+    mutationFn: (submitData: FormData) => productApi.addProduct(submitData),
+    onSuccess: () => {
+      toast.success("Thêm sản phẩm thành công");
+      reset();
+    },
+    onError: () => {
+      toast.error("Thêm sản phẩm thất bại");
+    }
+  })
+
+  const onSubmit = (data: FormDataAddProduct) => {
+    const attributeList: Attribute[] = selectedCategory?.listAttribute?.map((attr, index) => ({
+      name: attr,
+      value: data.attributes?.[index]?.value || ''
+    })) || [];
+
+
+    const formData = new FormData();
+
+    // Thêm các thông tin sản phẩm vào formData
+    formData.append("name", data.name);
+    formData.append("price", data.price.toString());
+    formData.append("stock", data.stock.toString());
+    formData.append("description", data.description);
+    formData.append("brandName", data.brandName);
+    formData.append("categoryName", data.categoryName);
+
+    // Thêm các thuộc tính sản phẩm vào formData
+    attributeList.forEach((attribute, index) => {
+      formData.append(`attributes[${index}].name`, attribute.name);
+      formData.append(`attributes[${index}].value`, attribute.value);
+    });
+
+    // Thêm các file ảnh vào formData
+    selectedImages.forEach((image, index) => {
+      formData.append(`images[${index}]`, image);
+    });
+    addProduct.mutate(formData)
+
   };
+
+
+
+
 
   return (
     <div className="mx-auto px-14 py-8 bg-white shadow-md rounded-lg">
@@ -73,7 +132,7 @@ export default function AddProduct() {
           <label className="block text-gray-700">Tên sản phẩm</label>
           <input
             {...register("name", { required: "Tên sản phẩm là bắt buộc" })}
-            className="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-300"
+            className="w-full mt-1 p-2 border border-gray-300  rounded-md focus:ring focus:ring-blue-300"
             placeholder="Nhập tên sản phẩm"
           />
         </div>
@@ -84,7 +143,7 @@ export default function AddProduct() {
           <input
             type="number"
             {...register("price", { required: "Giá là bắt buộc" })}
-            className="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-300"
+            className="w-full mt-1 p-2 border border-gray-300  rounded-md focus:ring focus:ring-blue-300"
             placeholder="Nhập giá"
           />
         </div>
@@ -95,7 +154,7 @@ export default function AddProduct() {
           <input
             type="number"
             {...register("stock", { required: "Số lượng là bắt buộc" })}
-            className="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-300"
+            className="w-full mt-1 p-2 border border-gray-300  rounded-md focus:ring focus:ring-blue-300"
             placeholder="Nhập số lượng"
           />
         </div>
@@ -103,20 +162,22 @@ export default function AddProduct() {
         {/* Description */}
         <div>
           <label className="block text-gray-700">Mô tả</label>
-          <textarea
-            {...register("description", { required: "Mô tả là bắt buộc" })}
-            className="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-300"
+          <ReactQuill
+            value={watch("description")}
+            onChange={(content) => setValue("description", content, { shouldValidate: true })}
+            className="mt-1 rounded-lg pb-0 h-24 mb-4"
             placeholder="Nhập mô tả sản phẩm"
-            rows={4}
+            theme="snow"
           />
+          {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
         </div>
 
         {/* Brand */}
         <div>
-          <label className="block text-gray-700">Thương hiệu</label>
+          <label className="block text-gray-700 mt-14">Thương hiệu</label>
           <select
             {...register("brandName", { required: "Thương hiệu là bắt buộc" })}
-            className="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-300"
+            className="w-full mt-1 p-2 border border-gray-300  rounded-md focus:ring focus:ring-blue-300"
           >
             {brandList && brandList.map((item) => (
               <option key={item.id} value={item.name}>
@@ -131,7 +192,7 @@ export default function AddProduct() {
           <label className="block text-gray-700">Danh mục</label>
           <select
             {...register("categoryName", { required: "Danh mục là bắt buộc" })}
-            className="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-blue-300"
+            className="w-full mt-1 p-2 border border-gray-300  rounded-md focus:ring focus:ring-blue-300"
           >
             {categoryList && categoryList.map((item) => (
               <option key={item.id} value={item.name}>
@@ -149,7 +210,7 @@ export default function AddProduct() {
               {...register(`attributes.${index}.value`, {
                 required: `${attr} là bắt buộc`,
               })}
-              className="w-2/3 p-2 border rounded-md focus:ring focus:ring-blue-300"
+              className="w-2/3 p-2 border border-gray-300  rounded-md focus:ring focus:ring-blue-300"
               placeholder={`Nhập ${attr.toLowerCase()}`}
             />
             {errors.attributes?.[index]?.value && (
@@ -158,13 +219,41 @@ export default function AddProduct() {
           </div>
         ))}
 
+        {/* Images */}
+        <div>
+          <label className="block text-gray-700">Chọn ảnh</label>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleImageChange}
+            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
+          />
+          {selectedImages.length > 0 && (
+            <div className="mt-2 grid grid-cols-4 gap-2">
+              {selectedImages.map((file, index) => (
+                <img
+                  key={index}
+                  src={URL.createObjectURL(file)}
+                  alt={`Ảnh ${index + 1}`}
+                  className="w-full h-24 object-cover rounded-md"
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+
         {/* Submit */}
-        <button
+        <Button
+          className="flex justify-center items-center w-full p-3 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:ring focus:ring-blue-300"
           type="submit"
-          className="w-full p-3 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:ring focus:ring-blue-300"
+          disabled={addProduct.isPending}
+          isLoading={addProduct.isPending}
         >
-          Lưu Sản Phẩm
-        </button>
+          Đăng nhập
+        </Button>
+
       </form>
     </div>
   );

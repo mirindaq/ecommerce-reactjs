@@ -1,6 +1,6 @@
 import { ResponseApi } from "./utils.type";
 
-export interface Attribute {
+export type Attribute = {
   name: string;
   value: string;
 }

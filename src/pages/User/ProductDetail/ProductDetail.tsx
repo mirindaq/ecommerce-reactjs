@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {  productApi } from "../../../apis/product.api";
+import { productApi } from "../../../apis/product.api";
 import { useMutation } from "@tanstack/react-query";
 import { Product } from "../../../types/product.type";
 import { useParams } from "react-router";
@@ -30,7 +30,6 @@ const ProductDetail = () => {
   useEffect(() => {
     getProduct.mutate();
   }, []);
-
   return (
     <>
       <div className="flex justify-center mt-5">
@@ -47,6 +46,15 @@ const ProductDetail = () => {
                   alt=""
                   className="w-full h-full object-contain"
                 />
+              </div>
+
+              <div className="border border-200 rounded-3xl mb-3">
+                <div className="border-b px-3 py-3 mt-2 text-base font-semibold">
+                  Giới thiệu sản phẩm
+                </div>
+                <div className="px-3 py-2 bg-white text-gray-800">
+                  <div dangerouslySetInnerHTML={{ __html: product?.description as string }}></div>
+                </div>
               </div>
 
             </div>
@@ -73,22 +81,13 @@ const ProductDetail = () => {
 
                 </>
               ) : (
-                <p className="mt-1">
+                <p className="text-red-600 text-xl font-bold mt-1 mb-2 mr-3">
                   {new Intl.NumberFormat("vi-VN", {
                     style: "currency",
                     currency: "VND",
                   }).format(product?.price || 0)}
                 </p>
               )}
-
-              <div className="border border-200 rounded-3xl mb-3">
-                <div className="border-b px-3 py-3 mt-2 text-base font-semibold">
-                  Giới thiệu sản phẩm
-                </div>
-                <div className="px-3 py-2 bg-white text-gray-800">
-                  {product?.description}
-                </div>
-              </div>
 
               <div className="grid grid-cols-2 gap-x-3 gap-y-2">
                 <Button
@@ -138,7 +137,7 @@ const ProductDetail = () => {
                         Thông số kỹ thuật
                       </div>
                       {product.attributeList.map((item, index) => (
-                        <>
+                        <div key={item.name}>
                           {index % 2 === 0 ? (
                             <div className="grid grid-cols-2 p-3">
                               <div className="col-span-1">{item.name}</div>
@@ -149,7 +148,7 @@ const ProductDetail = () => {
                             <div className="col-span-1">{item.name}</div>
                             <div className="col-span-1">{item.value}</div>
                           </div>)}
-                        </>
+                        </div>
                       ))}
                     </>
 
@@ -163,7 +162,7 @@ const ProductDetail = () => {
           </div>
         </div>
 
-      </div>
+      </div >
 
     </>
   );
